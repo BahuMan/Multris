@@ -96,7 +96,7 @@ public class PlayingFieldController : MonoBehaviour {
     }
 
     //I only need to check for complete lines on lines where blocks were added recently
-    public System.Collections.IEnumerator CheckForCompleteLines(List<GameObject> blocks)
+    public void CheckForCompleteLines(List<GameObject> blocks)
     {
         Debug.Log("CheckForCompleteLines");
         float minY = 0;
@@ -115,12 +115,12 @@ public class PlayingFieldController : MonoBehaviour {
         float currentY = minY;
         while (currentY < maxY+1f)
         {
-            yield return CheckForSingleCompleteLine(ref currentY);
+            CheckForSingleCompleteLine(ref currentY);
         }
     }
 
     //returns true if a complete line was found. This means the same Y coordinate should be checked again
-    public System.Collections.IEnumerator CheckForSingleCompleteLine(ref float LineY)
+    public void CheckForSingleCompleteLine(ref float LineY)
     {
         Vector3 origin = new Vector3(this.leftBorder.transform.position.x, LineY, 0);
         Vector3 direction = new Vector3(1f, 0, 0);
@@ -134,12 +134,10 @@ public class PlayingFieldController : MonoBehaviour {
                 hit.collider.gameObject.GetComponent<BlockController>().removeLine();
             }
             BringOtherBlocksDown(LineY);
-            yield return null;
         }
         else
         {
             LineY++; //since this parameter is passed by reference, the top function will now check the lines higher-up
-            yield return null;
         }
     }
 
