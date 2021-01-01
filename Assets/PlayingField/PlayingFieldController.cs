@@ -9,7 +9,8 @@ public class PlayingFieldController : MonoBehaviour {
     public int points;
     public int level = 0;
     public float fallDelay = 1;
-    public float keyboardDelay = .1f;
+    public float moveDelay = .05f;
+    public float rotateDelay = .3f;
 
     public GameObject leftBorder;
     public GameObject rightBorder;
@@ -20,7 +21,8 @@ public class PlayingFieldController : MonoBehaviour {
     private ActiveGroupController theNextGroup;
 
     private int blocksRequiredPerLine;
-    private float lastKeyboard = 0;
+    private float nextMove = 0;
+    private float nextRotate = 0;
 
     // Use this for initialization
     void Start () {
@@ -37,45 +39,49 @@ public class PlayingFieldController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (lastKeyboard + keyboardDelay < Time.time)
+        if (nextMove < Time.time)
         {
-            if (Input.GetAxis("Horizontal") > .5f)
+            if (Input.GetAxis("Horizontal") > .3f)
             {
                 theActiveGroup.MoveOneRight();
-                lastKeyboard = Time.time;
+                nextMove = Time.time + moveDelay / Input.GetAxis("Horizontal");
             }
 
-            if (Input.GetAxis("Horizontal") < -.5f)
+            if (Input.GetAxis("Horizontal") < -.3f)
             {
                 theActiveGroup.MoveOneLeft();
-                lastKeyboard = Time.time;
+                nextMove = Time.time + moveDelay / -Input.GetAxis("Horizontal");
             }
 
-            if (Input.GetAxis("Vertical") < -.5f)
+            if (Input.GetAxis("Vertical") < -.3f)
             {
                 if (!theActiveGroup.MoveOneDown())
                 {
                     theActiveGroup.ConvertToFixed();
                     Debug.Log("Fixed. This script should be destroyed");
                 }
-                lastKeyboard = Time.time;
+                nextMove = Time.time + moveDelay / -Input.GetAxis("Vertical");
             }
-            if (Input.GetButtonDown("Drop"))
-            {
-                theActiveGroup.Drop();
-                //lastKeyboard = Time.time;
-            }
+        }
+        if (nextRotate < Time.time)
+        {
             if (Input.GetButton("RotateClockWise"))
             {
                 theActiveGroup.RotateClockWise();
-                lastKeyboard = Time.time;
+                nextRotate = Time.time + rotateDelay;
             }
             if (Input.GetButton("RotateCounterClockWise"))
             {
                 theActiveGroup.RotateCounterClockWise();
-                lastKeyboard = Time.time;
+                nextRotate = Time.time + rotateDelay;
             }
         }
+        if (Input.GetButtonDown("Drop"))
+        {
+            theActiveGroup.Drop();
+            //lastKeyboard = Time.time;
+        }
+
     }
 
     //called by the group after it hit an obstruction and was fixed
