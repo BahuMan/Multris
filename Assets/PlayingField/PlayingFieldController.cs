@@ -12,17 +12,20 @@ public class PlayingFieldController : MonoBehaviour {
     public float moveDelay = .05f;
     public float rotateDelay = .3f;
 
+    public int widthPerPlayer = 11;
     public GameObject leftBorder;
     public GameObject rightBorder;
     public GameObject[] Groups;
 
-    private ActiveGroupController theActiveGroup;
-    public ActiveGroupController CurrentlyActiveGroup { get { return theActiveGroup; } }
-    private ActiveGroupController theNextGroup;
+    //private ActiveGroupController theActiveGroup;
+    //public ActiveGroupController CurrentlyActiveGroup { get { return theActiveGroup; } }
+    //private ActiveGroupController theNextGroup;
 
     private int blocksRequiredPerLine;
     private float nextMove = 0;
     private float nextRotate = 0;
+
+    private List<PlayerController> Players = new List<PlayerController>();
 
     // Use this for initialization
     void Start () {
@@ -31,66 +34,23 @@ public class PlayingFieldController : MonoBehaviour {
         points = 0;
         level = 0;
         fallDelay = 1;
-
-        theNextGroup = CreateNewNextGroup();
-        theActiveGroup = MakeNextGroupActive();
-
 	}
-	
-	// Update is called once per frame
-	void Update () {
-        if (nextMove < Time.time)
-        {
-            if (Input.GetAxis("Horizontal") > .3f)
-            {
-                theActiveGroup.MoveOneRight();
-                nextMove = Time.time + moveDelay / Input.GetAxis("Horizontal");
-            }
 
-            if (Input.GetAxis("Horizontal") < -.3f)
-            {
-                theActiveGroup.MoveOneLeft();
-                nextMove = Time.time + moveDelay / -Input.GetAxis("Horizontal");
-            }
-
-            if (Input.GetAxis("Vertical") < -.3f)
-            {
-                if (!theActiveGroup.MoveOneDown())
-                {
-                    theActiveGroup.ConvertToFixed();
-                    Debug.Log("Fixed. This script should be destroyed");
-                }
-                nextMove = Time.time + moveDelay / -Input.GetAxis("Vertical");
-            }
-        }
-        if (nextRotate < Time.time)
-        {
-            if (Input.GetButton("RotateClockWise"))
-            {
-                theActiveGroup.RotateClockWise();
-                nextRotate = Time.time + rotateDelay;
-            }
-            if (Input.GetButton("RotateCounterClockWise"))
-            {
-                theActiveGroup.RotateCounterClockWise();
-                nextRotate = Time.time + rotateDelay;
-            }
-        }
-        if (Input.GetButtonDown("Drop"))
-        {
-            theActiveGroup.Drop();
-            //lastKeyboard = Time.time;
-        }
-
+    public int RegisterNewPlayer(PlayerController p)
+    {
+        int playernr = Players.Count;
+        Players.Add(p);
+        return playernr;
     }
-
+	
     //called by the group after it hit an obstruction and was fixed
     //(time to create a new group at the top)
-    public void GroupWasFixed(List<GameObject> blocks)
+    public void GroupWasFixed(int playerNr, List<GameObject> blocks)
     {
+        PlayerController p = Players[playerNr];
         Reparent(blocks);
         CheckForCompleteLines(blocks);
-        MakeNextGroupActive();
+        p.ActivateNextGroup(this.CreateNewNextGroup());
     }
 
     private void Reparent(List<GameObject> blocks)
@@ -154,41 +114,16 @@ public class PlayingFieldController : MonoBehaviour {
             if (b.transform.position.y > LineY)
             {
                 BlockController block = b.gameObject.GetComponent<BlockController>();
-                block.MoveOneDown();
+                block?.MoveOneDown();
             }
         }
     }
 
-    public ActiveGroupController MakeNextGroupActive()
-    {
-        Debug.Log("PutNextGroupInField");
-
-        //the one to return was already created:
-        theActiveGroup = theNextGroup;
-        theActiveGroup.transform.position = GroupStartPosition.position;
-        theActiveGroup.transform.rotation = GroupStartPosition.rotation;
-
-        if (theActiveGroup.isColliding())
-        {
-            Destroy(theActiveGroup.gameObject);
-            GameOver();
-            return null;
-        }
-
-        //now create the one in the waiting area:
-        theNextGroup = CreateNewNextGroup();
-
-        //initialization:
-        theActiveGroup.SetPlayingField(this, this.fallDelay);
-        return theActiveGroup;
-    }
-
-    private ActiveGroupController CreateNewNextGroup()
+    public ActiveGroupController CreateNewNextGroup()
     {
         int newIndex = Random.Range(0, Groups.Length);
         GameObject newGroup = (GameObject)Instantiate(Groups[newIndex], this.NextGroupPosition.position, this.NextGroupPosition.rotation);
-        theNextGroup = newGroup.GetComponent<ActiveGroupController>();
-        return theNextGroup;
+        return newGroup.GetComponent<ActiveGroupController>();
     }
 
     public void GameOver()

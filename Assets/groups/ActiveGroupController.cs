@@ -5,15 +5,16 @@ public class ActiveGroupController : MonoBehaviour {
 
     public float fallDelay = 128;
 
+    public PlayingFieldController myPlayingField;
+    public int PlayerNr = -1;
+
     private bool inWaitingRoom = true;
     private float lastFall = 0;
     private Quaternion Rotation90Degrees = Quaternion.Euler(0, 0, 90);
     private Quaternion RotationMinus90Degrees = Quaternion.Euler(0, 0, -90);
-    public PlayingFieldController myPlayingField;
 
     // Use this for initialization
     void Start () {
-        Debug.Log("ActiveGroupController.Start");
         ChooseRandomColor();
 	}
 
@@ -33,10 +34,11 @@ public class ActiveGroupController : MonoBehaviour {
     }
 
     //when a group is created, it should be added to a playingfield before it can start falling
-    public void SetPlayingField(PlayingFieldController thePlayingField, float fallingDelay)
+    public void StartFalling(PlayingFieldController thePlayingField, int playerID, float fallingDelay)
     {
-        Debug.Log("SetPlayingField");
+        Debug.Log("StartFalling");
         inWaitingRoom = false;
+        this.PlayerNr = playerID;
         this.fallDelay = fallingDelay;
         this.myPlayingField = thePlayingField;
     }
@@ -53,7 +55,7 @@ public class ActiveGroupController : MonoBehaviour {
         }
         transform.DetachChildren();
         
-        myPlayingField.GroupWasFixed(blocks);
+        myPlayingField.GroupWasFixed(this.PlayerNr, blocks);
         Destroy(this.gameObject);
     }
 
