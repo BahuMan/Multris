@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class PlayingFieldController : MonoBehaviour {
 
@@ -12,10 +13,13 @@ public class PlayingFieldController : MonoBehaviour {
     public float moveDelay = .05f;
     public float rotateDelay = .3f;
 
-    public int widthPerPlayer = 11;
-    public GameObject leftBorder;
-    public GameObject rightBorder;
-    public GameObject[] Groups;
+    [SerializeField] private int widthPerPlayer = 11;
+    [SerializeField] private GameObject leftBorder;
+    [SerializeField] private GameObject rightBorder;
+    [SerializeField] private GameObject[] Groups;
+
+    public enum Status_enum { IDLE, BLOCKS_FALLING, DELETING_LINES, FILLING_LINES }
+    public Status_enum FieldStatus = Status_enum.IDLE;
 
     //private ActiveGroupController theActiveGroup;
     //public ActiveGroupController CurrentlyActiveGroup { get { return theActiveGroup; } }
@@ -25,9 +29,11 @@ public class PlayingFieldController : MonoBehaviour {
     private float nextMove = 0;
     private float nextRotate = 0;
 
+    [Tooltip("Show this text when game is idle and no players have joined")]
+    [SerializeField] private UnityEngine.UI.Text IdleText;
+
     private List<PlayerController> Players = new List<PlayerController>();
 
-    // Use this for initialization
     void Start () {
         blocksRequiredPerLine = Mathf.RoundToInt(rightBorder.transform.position.x - leftBorder.transform.position.x)-1;
         Debug.Log("blocksRequiredPerLine = " + blocksRequiredPerLine);
@@ -35,6 +41,26 @@ public class PlayingFieldController : MonoBehaviour {
         level = 0;
         fallDelay = 1;
 	}
+
+    private void Update()
+    {
+        switch (FieldStatus) {
+            case Status_enum.IDLE: IdleCheckForPlayers(); break;
+        }
+    }
+
+    private void IdleCheckForPlayers()
+    {
+        if (this.Players.Count == 0)
+        {
+            IdleText.enabled = true; //show text when zero players
+        }
+        else
+        {
+            this.FieldStatus = Status_enum.BLOCKS_FALLING;
+            IdleText.enabled = false;
+        }
+    }
 
     public int RegisterNewPlayer(PlayerController p)
     {
@@ -121,7 +147,7 @@ public class PlayingFieldController : MonoBehaviour {
 
     public ActiveGroupController CreateNewNextGroup()
     {
-        int newIndex = Random.Range(0, Groups.Length);
+        int newIndex = UnityEngine.Random.Range(0, Groups.Length);
         GameObject newGroup = (GameObject)Instantiate(Groups[newIndex], this.NextGroupPosition.position, this.NextGroupPosition.rotation);
         return newGroup.GetComponent<ActiveGroupController>();
     }

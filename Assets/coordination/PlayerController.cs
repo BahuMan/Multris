@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerController: MonoBehaviour
 {
@@ -9,18 +11,16 @@ public class PlayerController: MonoBehaviour
     public int level = 0;
     public int playerNr = -1;
     public float fallDelay = 1;
-    public float moveDelay = .05f;
-    public float rotateDelay = .3f;
 
     private PlayingFieldController playingField;
     private ActiveGroupController theActiveGroup;
     public ActiveGroupController CurrentlyActiveGroup { get { return theActiveGroup; } }
     private ActiveGroupController theNextGroup;
 
-    private float nextMove = 0;
-    private float nextRotate = 0;
+    public UnityEvent OnGameOver;
 
-    void Start()
+
+    public void JoinGame()
     {
         points = 0;
         level = 0;
@@ -70,55 +70,37 @@ public class PlayerController: MonoBehaviour
 
     public void GameOver()
     {
-        Debug.Log("GameOver!");
-        Destroy(this); //will destroy the script, not the gameobject.
+        this.OnGameOver.Invoke();
     }
 
-    void Update()
+    public void MoveOneRight()
     {
-        if (nextMove < Time.time)
-        {
-            if (Input.GetAxis("Horizontal") > .3f)
-            {
-                theActiveGroup.MoveOneRight();
-                nextMove = Time.time + moveDelay / Input.GetAxis("Horizontal");
-            }
+        theActiveGroup.MoveOneRight();
+    }
 
-            if (Input.GetAxis("Horizontal") < -.3f)
-            {
-                theActiveGroup.MoveOneLeft();
-                nextMove = Time.time + moveDelay / -Input.GetAxis("Horizontal");
-            }
+    public void MoveOneLeft()
+    {
+        theActiveGroup.MoveOneLeft();
+    }
 
-            if (Input.GetAxis("Vertical") < -.3f)
-            {
-                if (!theActiveGroup.MoveOneDown())
-                {
-                    theActiveGroup.ConvertToFixed();
-                    Debug.Log("Fixed. This script should be destroyed");
-                }
-                nextMove = Time.time + moveDelay / -Input.GetAxis("Vertical");
-            }
-        }
-        if (nextRotate < Time.time)
-        {
-            if (Input.GetButton("RotateClockWise"))
-            {
-                theActiveGroup.RotateClockWise();
-                nextRotate = Time.time + rotateDelay;
-            }
-            if (Input.GetButton("RotateCounterClockWise"))
-            {
-                theActiveGroup.RotateCounterClockWise();
-                nextRotate = Time.time + rotateDelay;
-            }
-        }
-        if (Input.GetButtonDown("Drop"))
-        {
-            theActiveGroup.Drop();
-            //lastKeyboard = Time.time;
-        }
+    public void MoveOneDown()
+    {
+        theActiveGroup.MoveOneDown();
+    }
 
+    public void Drop()
+    {
+        theActiveGroup.Drop();
+    }
+
+    public void RotateClockWise()
+    {
+        theActiveGroup.RotateClockWise();
+    }
+
+    public void RotateCounterClockWise()
+    {
+        theActiveGroup.RotateCounterClockWise();
     }
 
 }
