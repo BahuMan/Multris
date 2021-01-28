@@ -5,10 +5,16 @@ using System;
 public class PlayingFieldController : MonoBehaviour {
 
     public Transform GroupStartPosition;
-    public Transform NextGroupPosition;
+    public Transform WaitingArea;
 
-    public int points;
-    public int level = 0;
+    [Serializable]
+    public class PlayerPresets
+    {
+        public Vector3 GroupStartPosition;
+        public Vector3 NextGroupPosition;
+        public Vector3 CameraPosition;
+    }
+
     public float fallDelay = 1;
     public float moveDelay = .05f;
     public float rotateDelay = .3f;
@@ -16,6 +22,8 @@ public class PlayingFieldController : MonoBehaviour {
     [SerializeField] private int widthPerPlayer = 11;
     [SerializeField] private GameObject leftBorder;
     [SerializeField] private GameObject rightBorder;
+    [SerializeField] private GameObject grid;
+
     [SerializeField] private GameObject[] Groups;
 
     public enum Status_enum { IDLE, BLOCKS_FALLING, DELETING_LINES, FILLING_LINES }
@@ -26,8 +34,6 @@ public class PlayingFieldController : MonoBehaviour {
     //private ActiveGroupController theNextGroup;
 
     private int blocksRequiredPerLine;
-    private float nextMove = 0;
-    private float nextRotate = 0;
 
     [Tooltip("Show this text when game is idle and no players have joined")]
     [SerializeField] private UnityEngine.UI.Text IdleText;
@@ -36,10 +42,6 @@ public class PlayingFieldController : MonoBehaviour {
 
     void Start () {
         blocksRequiredPerLine = Mathf.RoundToInt(rightBorder.transform.position.x - leftBorder.transform.position.x)-1;
-        Debug.Log("blocksRequiredPerLine = " + blocksRequiredPerLine);
-        points = 0;
-        level = 0;
-        fallDelay = 1;
 	}
 
     private void Update()
@@ -65,10 +67,39 @@ public class PlayingFieldController : MonoBehaviour {
     public int RegisterNewPlayer(PlayerController p)
     {
         int playernr = Players.Count;
+        SetPlayerPositions(playernr, p);
         Players.Add(p);
+        AdjustFieldWidth();
         return playernr;
     }
-	
+
+    /**
+     * provides the new player with a unique starting position
+     */
+    private void SetPlayerPositions(int playernr, PlayerController p)
+    {
+        //this is how much each new player needs to shift to the right:
+        Vector3 displacement = playernr * widthPerPlayer * Vector3.right;
+
+        Transform newWaitingArea = null;
+        if (playernr == 0) newWaitingArea = this.WaitingArea;
+        else newWaitingArea = Instantiate(WaitingArea, WaitingArea.position + displacement, Quaternion.identity);
+
+        p.GroupStartPosition = Instantiate(this.GroupStartPosition, this.GroupStartPosition.position + displacement, Quaternion.identity) ;
+        p.NextGroupPosition = newWaitingArea.Find("NextGroupPosition");
+    }
+
+    private void AdjustFieldWidth()
+    {
+        this.rightBorder.transform.position = this.leftBorder.transform.position + Vector3.right * widthPerPlayer * Players.Count;
+
+        float fieldHeight = this.grid.transform.localScale.y;
+
+        this.grid.transform.localScale = new Vector3(widthPerPlayer * Players.Count, fieldHeight, 1);
+        Material m = this.grid.GetComponent<MeshRenderer>().material;
+        m.SetVector("Tiling", new Vector4(widthPerPlayer * Players.Count, fieldHeight, 0, 0));
+    }
+
     //called by the group after it hit an obstruction and was fixed
     //(time to create a new group at the top)
     public void GroupWasFixed(int playerNr, List<GameObject> blocks)
@@ -76,7 +107,7 @@ public class PlayingFieldController : MonoBehaviour {
         PlayerController p = Players[playerNr];
         Reparent(blocks);
         CheckForCompleteLines(blocks);
-        p.ActivateNextGroup(this.CreateNewNextGroup());
+        p.ActivateNextGroup(this.CreateNewNextGroup(p));
     }
 
     private void Reparent(List<GameObject> blocks)
@@ -145,10 +176,10 @@ public class PlayingFieldController : MonoBehaviour {
         }
     }
 
-    public ActiveGroupController CreateNewNextGroup()
+    public ActiveGroupController CreateNewNextGroup(PlayerController p)
     {
         int newIndex = UnityEngine.Random.Range(0, Groups.Length);
-        GameObject newGroup = (GameObject)Instantiate(Groups[newIndex], this.NextGroupPosition.position, this.NextGroupPosition.rotation);
+        GameObject newGroup = (GameObject)Instantiate(Groups[newIndex], p.NextGroupPosition.position, p.NextGroupPosition.rotation);
         return newGroup.GetComponent<ActiveGroupController>();
     }
 

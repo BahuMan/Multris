@@ -28,8 +28,8 @@ public class PlayerController: MonoBehaviour
 
         playingField = Object.FindObjectOfType<PlayingFieldController>();
         this.playerNr = playingField.RegisterNewPlayer(this);
-        SetNextGroup(playingField.CreateNewNextGroup());
-        ActivateNextGroup(playingField.CreateNewNextGroup());
+        SetNextGroup(playingField.CreateNewNextGroup(this));
+        ActivateNextGroup(playingField.CreateNewNextGroup(this));
 
     }
 
