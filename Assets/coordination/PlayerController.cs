@@ -4,6 +4,10 @@ using UnityEngine.Events;
 
 public class PlayerController: MonoBehaviour
 {
+
+    public enum PlayerStatusEnum { IDLE, JOINING, PLAYING, GAMEOVER }
+    public PlayerStatusEnum PlayerStatus = PlayerStatusEnum.IDLE;
+
     public Transform GroupStartPosition;
     public Transform NextGroupPosition;
 
@@ -15,6 +19,8 @@ public class PlayerController: MonoBehaviour
     private PlayingFieldController playingField;
     private ActiveGroupController theActiveGroup;
     public ActiveGroupController CurrentlyActiveGroup { get { return theActiveGroup; } }
+
+
     private ActiveGroupController theNextGroup;
 
     public UnityEvent OnGameOver;
@@ -31,6 +37,7 @@ public class PlayerController: MonoBehaviour
         SetNextGroup(playingField.CreateNewNextGroup(this));
         ActivateNextGroup(playingField.CreateNewNextGroup(this));
 
+        this.PlayerStatus = PlayerStatusEnum.PLAYING;
     }
 
     public void SetNextGroup(ActiveGroupController ng)
@@ -70,6 +77,7 @@ public class PlayerController: MonoBehaviour
 
     public void GameOver()
     {
+        this.PlayerStatus = PlayerStatusEnum.GAMEOVER;
         this.OnGameOver.Invoke();
     }
 

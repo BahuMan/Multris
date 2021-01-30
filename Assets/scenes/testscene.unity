@@ -440,6 +440,88 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 649001352}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &690915013
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 690915016}
+  - component: {fileID: 690915015}
+  - component: {fileID: 690915014}
+  m_Layer: 0
+  m_Name: LocalJoystickPlayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &690915014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690915013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c54b9a5a860c2534ab8c9f042eaae9b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerStatus: 0
+  GroupStartPosition: {fileID: 0}
+  NextGroupPosition: {fileID: 0}
+  points: 0
+  level: 0
+  playerNr: -1
+  fallDelay: 1
+  OnGameOver:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 690915015}
+        m_MethodName: OnGameOver
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &690915015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690915013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d4e75329e04f7b478b58839b825ddc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InputExtension: JS
+  moveDelay: 0.05
+  rotateDelay: 0.3
+--- !u!4 &690915016
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 690915013}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &697732995
 GameObject:
   m_ObjectHideFlags: 0
@@ -748,6 +830,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c54b9a5a860c2534ab8c9f042eaae9b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerStatus: 0
   GroupStartPosition: {fileID: 1688342853}
   NextGroupPosition: {fileID: 1086627284}
   points: 0
@@ -983,6 +1066,7 @@ MonoBehaviour:
   widthPerPlayer: 11
   leftBorder: {fileID: 649001352}
   rightBorder: {fileID: 729268655}
+  bottomBorder: {fileID: 610078061}
   grid: {fileID: 124154544}
   Groups:
   - {fileID: 1000010561892240, guid: fa16ffb989800264184833de4fb7c477, type: 3}

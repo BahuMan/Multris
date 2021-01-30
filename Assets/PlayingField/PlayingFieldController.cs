@@ -22,6 +22,7 @@ public class PlayingFieldController : MonoBehaviour {
     [SerializeField] private int widthPerPlayer = 11;
     [SerializeField] private GameObject leftBorder;
     [SerializeField] private GameObject rightBorder;
+    [SerializeField] private GameObject bottomBorder;
     [SerializeField] private GameObject grid;
 
     [SerializeField] private GameObject[] Groups;
@@ -91,13 +92,23 @@ public class PlayingFieldController : MonoBehaviour {
 
     private void AdjustFieldWidth()
     {
-        this.rightBorder.transform.position = this.leftBorder.transform.position + Vector3.right * widthPerPlayer * Players.Count;
+        //position right border
+        this.rightBorder.transform.position = this.leftBorder.transform.position + Vector3.right * widthPerPlayer * Players.Count + Vector3.right;
 
+        //position bottom border:
+        this.bottomBorder.transform.localPosition = new Vector3(this.leftBorder.transform.position.x + .5f + widthPerPlayer * Players.Count / 2f, this.bottomBorder.transform.localPosition.y, this.bottomBorder.transform.localPosition.z);
+        this.bottomBorder.transform.localScale = new Vector3(widthPerPlayer * Players.Count, 1, 1);
+
+
+        //adjust background grid to show correct number of tiles
         float fieldHeight = this.grid.transform.localScale.y;
-
         this.grid.transform.localScale = new Vector3(widthPerPlayer * Players.Count, fieldHeight, 1);
+        this.grid.transform.localPosition = new Vector3(this.leftBorder.transform.position.x + .5f + widthPerPlayer * Players.Count / 2f, this.grid.transform.localPosition.y, this.grid.transform.localPosition.z);
         Material m = this.grid.GetComponent<MeshRenderer>().material;
         m.SetVector("Tiling", new Vector4(widthPerPlayer * Players.Count, fieldHeight, 0, 0));
+
+        //more players, equals bigger lines to fill
+        blocksRequiredPerLine = widthPerPlayer * Players.Count;
     }
 
     //called by the group after it hit an obstruction and was fixed

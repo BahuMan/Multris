@@ -15,14 +15,25 @@ public class LocalInputController: MonoBehaviour
     private float nextMove = 0;
     private float nextRotate = 0;
 
-    IEnumerator Start()
+    void Start()
     {
-        yield return new WaitForSeconds(5);
         _player = GetComponent<PlayerController>();
-        _player.JoinGame();
     }
 
     void Update()
+    {
+        if (_player.PlayerStatus == PlayerController.PlayerStatusEnum.PLAYING)
+        {
+            ProcessInput();
+        }
+        else if (Input.GetButtonDown("Drop" + InputExtension))
+        {
+            _player.JoinGame();
+        }
+
+    }
+
+    private void ProcessInput()
     {
         if (nextMove < Time.time)
         {
@@ -62,7 +73,6 @@ public class LocalInputController: MonoBehaviour
             _player.Drop();
             //lastKeyboard = Time.time;
         }
-
     }
 
     public void OnGameOver()
