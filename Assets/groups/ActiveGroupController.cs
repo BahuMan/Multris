@@ -102,7 +102,7 @@ public class ActiveGroupController : MonoBehaviour {
         {
             //we're checking against a cube smaller than the existing blocks, to prevent adjacent blocks from triggering collisions
             Collider[] colliders = Physics.OverlapBox(child.position, new Vector3(.4f, .4f, .4f));
-            if (colliders.Length > 0)
+            if (colliders.Length > 1)
             {
                 //Debug.Log("Hit something!");
                 foreach (Collider col in colliders)
