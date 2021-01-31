@@ -7,14 +7,6 @@ public class PlayingFieldController : MonoBehaviour {
     public Transform GroupStartPosition;
     public Transform WaitingArea;
 
-    [Serializable]
-    public class PlayerPresets
-    {
-        public Vector3 GroupStartPosition;
-        public Vector3 NextGroupPosition;
-        public Vector3 CameraPosition;
-    }
-
     public float fallDelay = 1;
     public float moveDelay = .05f;
     public float rotateDelay = .3f;
@@ -27,7 +19,7 @@ public class PlayingFieldController : MonoBehaviour {
 
     [SerializeField] private GameObject[] Groups;
 
-    public enum Status_enum { IDLE, BLOCKS_FALLING, DELETING_LINES, FILLING_LINES }
+    public enum Status_enum { IDLE, BLOCKS_FALLING, LINES_CHECK, LINES_DELETE, LINES_FILL }
     public Status_enum FieldStatus = Status_enum.IDLE;
 
     //private ActiveGroupController theActiveGroup;
@@ -40,6 +32,12 @@ public class PlayingFieldController : MonoBehaviour {
     [SerializeField] private UnityEngine.UI.Text IdleText;
 
     private List<PlayerController> Players = new List<PlayerController>();
+    public int PlayerCount { get => Players.Count; }
+
+    private List<ActiveGroupController> FallingBlocks = new List<ActiveGroupController>();
+    private List<int> LinesToCheck = new List<int>();
+    private List<BlockController> BlocksToDelete = new List<BlockController>();
+    private List<BlockController> BlocksToMoveDown = new List<BlockController>();
 
     void Start () {
         blocksRequiredPerLine = Mathf.RoundToInt(rightBorder.transform.position.x - leftBorder.transform.position.x)-1;
@@ -49,6 +47,23 @@ public class PlayingFieldController : MonoBehaviour {
     {
         switch (FieldStatus) {
             case Status_enum.IDLE: IdleCheckForPlayers(); break;
+            case Status_enum.BLOCKS_FALLING: FallingBlocksUpdate(); break;
+            case Status_enum.LINES_CHECK: DeleteLinesUpdate(); break;
+        }
+    }
+
+    private void DeleteLinesUpdate()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void FallingBlocksUpdate()
+    {
+        foreach (var g in FallingBlocks.ToArray())
+        {
+            //during the call of this update, the element might get fixed and be removed
+            //from the list. That's why the iterator runs over an array copy
+            g.FallingUpdate();
         }
     }
 
@@ -72,6 +87,11 @@ public class PlayingFieldController : MonoBehaviour {
         Players.Add(p);
         AdjustFieldWidth();
         return playernr;
+    }
+
+    public void RegisterFallingBlock(ActiveGroupController agc)
+    {
+        this.FallingBlocks.Add(agc);
     }
 
     /**

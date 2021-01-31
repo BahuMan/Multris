@@ -27,7 +27,7 @@ public class ActiveGroupController : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update() {
+    public void FallingUpdate() {
 
         if (inWaitingRoom) return;
 
@@ -49,6 +49,8 @@ public class ActiveGroupController : MonoBehaviour {
         this.PlayerNr = playerID;
         this.fallDelay = fallingDelay;
         this.myPlayingField = thePlayingField;
+
+        thePlayingField.RegisterFallingBlock(this);
     }
 
     public void ConvertToFixed()
