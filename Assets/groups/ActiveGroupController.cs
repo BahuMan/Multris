@@ -15,8 +15,16 @@ public class ActiveGroupController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        ChooseRandomColor();
+        //SetColor(ChooseRandomColor());
 	}
+
+    public void SetPlayer(int nr, Color PlayerColor)
+    {
+        this.PlayerNr = nr;
+        float h, s, v;
+        Color.RGBToHSV(PlayerColor, out h, out s, out v);
+        SetColor(Color.HSVToRGB(h, s, v + Random.Range(-.4f, .4f)));
+    }
 
     // Update is called once per frame
     void Update() {
@@ -153,9 +161,9 @@ public class ActiveGroupController : MonoBehaviour {
         return true;
     }
 
-    public void ChooseRandomColor()
+    private Color ChooseRandomColor()
     {
-        Color clr = new Color(Random.Range(0, 5) * (1f/4f), Random.Range(0, 5) * (1f / 4f), Random.Range(0, 5) * (1f / 4f)); //Random.ColorHSV(0, 1, .8f, 1, .5f, 1);
+        Color clr = new Color(Random.Range(0, 5) * (1f / 4f), Random.Range(0, 5) * (1f / 4f), Random.Range(0, 5) * (1f / 4f)); //Random.ColorHSV(0, 1, .8f, 1, .5f, 1);
 
         //color must be bright enough:
         while (clr.grayscale < .5f)
@@ -163,6 +171,11 @@ public class ActiveGroupController : MonoBehaviour {
             clr = new Color(Random.Range(0, 5) * (1f / 4f), Random.Range(0, 5) * (1f / 4f), Random.Range(0, 5) * (1f / 4f)); //Random.ColorHSV(0, 1, .8f, 1, .5f, 1);
         }
 
+        return clr;
+    }
+
+    private void SetColor(Color clr)
+    {
         //set color for all blocks in group
         foreach (Transform block in transform)
         {

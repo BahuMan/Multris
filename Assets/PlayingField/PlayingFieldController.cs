@@ -191,7 +191,9 @@ public class PlayingFieldController : MonoBehaviour {
     {
         int newIndex = UnityEngine.Random.Range(0, Groups.Length);
         GameObject newGroup = (GameObject)Instantiate(Groups[newIndex], p.NextGroupPosition.position, p.NextGroupPosition.rotation);
-        return newGroup.GetComponent<ActiveGroupController>();
+        ActiveGroupController agc = newGroup.GetComponent<ActiveGroupController>();
+        agc.SetPlayer(p.playerNr, p.MyColor);
+        return agc;
     }
 
     public void GameOver()

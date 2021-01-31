@@ -15,6 +15,7 @@ public class PlayerController: MonoBehaviour
     public int level = 0;
     public int playerNr = -1;
     public float fallDelay = 1;
+    public Color MyColor;
 
     private PlayingFieldController playingField;
     private ActiveGroupController theActiveGroup;
@@ -31,6 +32,7 @@ public class PlayerController: MonoBehaviour
         points = 0;
         level = 0;
         fallDelay = 1;
+        MyColor = ChooseRandomColor();
 
         playingField = Object.FindObjectOfType<PlayingFieldController>();
         this.playerNr = playingField.RegisterNewPlayer(this);
@@ -81,6 +83,18 @@ public class PlayerController: MonoBehaviour
         this.OnGameOver.Invoke();
     }
 
+    private Color ChooseRandomColor()
+    {
+        Color clr = new Color(Random.Range(0, 5) * (1f / 4f), Random.Range(0, 5) * (1f / 4f), Random.Range(0, 5) * (1f / 4f)); //Random.ColorHSV(0, 1, .8f, 1, .5f, 1);
+
+        //color must be bright enough:
+        while (clr.grayscale < .5f)
+        {
+            clr = new Color(Random.Range(0, 5) * (1f / 4f), Random.Range(0, 5) * (1f / 4f), Random.Range(0, 5) * (1f / 4f)); //Random.ColorHSV(0, 1, .8f, 1, .5f, 1);
+        }
+
+        return clr;
+    }
     public void MoveOneRight()
     {
         theActiveGroup.MoveOneRight();
