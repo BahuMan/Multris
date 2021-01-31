@@ -4,17 +4,8 @@ using System.Collections;
 [RequireComponent(typeof(BoxCollider))]
 public class BlockController : MonoBehaviour {
 
-    new private BoxCollider collider;
-	
-    // Use this for initialization
-	void Start () {
-        this.collider = GetComponent<BoxCollider>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    public float FadeDuration = 1f;
+    public Color _color;
 
     //called when the group stops falling and every cube is fixed in the playing field
     public void wasFixed()
@@ -22,9 +13,19 @@ public class BlockController : MonoBehaviour {
         //eliminate rounding errors from previous rotations before fixing the block:
         transform.position = new Vector3(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y), Mathf.Round(transform.position.z));
         transform.rotation = Quaternion.Euler(0, Mathf.Round(transform.rotation.eulerAngles.y / 90.0f)*90f, 0);
-        this.collider.enabled = true;
+        StartCoroutine(FadeWhiteToColor(_color));
     }
 
+    IEnumerator FadeWhiteToColor(Color c)
+    {
+        float FadeStart = Time.time;
+        while (Time.time < (FadeStart + FadeDuration))
+        {
+            SetColor(Color.Lerp(Color.white, c, (Time.time-FadeStart)/FadeDuration));
+            yield return null;
+        }
+        SetColor(c);
+    }
     public void removeLine()
     {
         //TODO: spectacular self destruction animation ;-)
@@ -39,6 +40,7 @@ public class BlockController : MonoBehaviour {
 
     public void SetColor(Color c)
     {
+        _color = c;
         foreach (Transform t in transform)
         {
             t.gameObject.GetComponent<MeshRenderer>().material.color = c;
