@@ -105,7 +105,7 @@ public class PlayingFieldController : MonoBehaviour {
         this.grid.transform.localScale = new Vector3(widthPerPlayer * Players.Count, fieldHeight, 1);
         this.grid.transform.localPosition = new Vector3(this.leftBorder.transform.position.x + .5f + widthPerPlayer * Players.Count / 2f, this.grid.transform.localPosition.y, this.grid.transform.localPosition.z);
         Material m = this.grid.GetComponent<MeshRenderer>().material;
-        m.SetVector("Tiling", new Vector4(widthPerPlayer * Players.Count, fieldHeight, 0, 0));
+        m.mainTextureScale = new Vector2(widthPerPlayer* Players.Count, fieldHeight);
 
         //more players, equals bigger lines to fill
         blocksRequiredPerLine = widthPerPlayer * Players.Count;

@@ -477,6 +477,7 @@ MonoBehaviour:
   level: 0
   playerNr: -1
   fallDelay: 1
+  MyColor: {r: 0, g: 0, b: 0, a: 0}
   OnGameOver:
     m_PersistentCalls:
       m_Calls:
@@ -520,7 +521,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &697732995
 GameObject:
@@ -837,6 +838,7 @@ MonoBehaviour:
   level: 0
   playerNr: -1
   fallDelay: 1
+  MyColor: {r: 0, g: 0, b: 0, a: 0}
   OnGameOver:
     m_PersistentCalls:
       m_Calls:
@@ -865,7 +867,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1114349504
 MonoBehaviour:
@@ -974,7 +976,7 @@ RectTransform:
   m_Children:
   - {fileID: 697732996}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1142,7 +1144,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &2147137187 stripped
 Transform:
@@ -1200,7 +1202,7 @@ PrefabInstance:
     - target: {fileID: 3709652640978139036, guid: c1658932b6269174280bc91c2c6a7919,
         type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3709652640978139036, guid: c1658932b6269174280bc91c2c6a7919,
         type: 3}
