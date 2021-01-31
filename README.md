@@ -8,9 +8,9 @@ A Unity project for a game with tetris-like controls
 
 ## Known Bugs
 - sometimes, a full line does not disappear
-- players's falling blocks don't collide with each other (you can move through each other)
 
 ## To Do
 - more animation when disappearing lines
 - networked multiplayer (which network lib/protocol? PUN ?)
-- menus, named players, code should handle joining AND quitting
+- menus, named players
+- what should happen when a player quits/dies ?
