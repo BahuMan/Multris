@@ -55,18 +55,7 @@ public class ActiveGroupController : MonoBehaviour {
 
     public void ConvertToFixed()
     {
-        Debug.Log("ConvertToFixed");
-        //create a list of children, so we can reset parent and feed list to playingfield
-        List<GameObject> blocks = new List<GameObject>(transform.childCount);
-        foreach (Transform child in transform)
-        {
-            child.GetComponent<BlockController>().wasFixed();
-            blocks.Add(child.gameObject);
-        }
-        transform.DetachChildren();
-        
-        myPlayingField.GroupWasFixed(this.PlayerNr, blocks);
-        Destroy(this.gameObject);
+        myPlayingField.GroupWasFixed(this);
     }
 
     //returns false if the block could no longer move
@@ -115,10 +104,10 @@ public class ActiveGroupController : MonoBehaviour {
             if (colliders.Length > 1)
             {
                 //Debug.Log("Hit something!");
-                foreach (Collider col in colliders)
-                {
-                    Debug.Log("block " + child.gameObject.name + " hit " + col.gameObject.name);
-                }
+                //foreach (Collider col in colliders)
+                //{
+                //    Debug.Log("block " + child.gameObject.name + " hit " + col.gameObject.name);
+                //}
                 return true;
             }
         }
@@ -127,7 +116,6 @@ public class ActiveGroupController : MonoBehaviour {
 
     public void Drop()
     {
-        Debug.Log("Drop");
         while (MoveOneDown())
         {
             //we're moving down one line at the time

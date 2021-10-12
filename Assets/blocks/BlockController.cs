@@ -26,16 +26,21 @@ public class BlockController : MonoBehaviour {
         }
         SetColor(c);
     }
-    public void removeLine()
+
+    //when a block gets destroyed, this function gets called every frame
+    //until it returns true (signalling destruction is complete)
+    public bool UpdateDestructionDone()
     {
         //TODO: spectacular self destruction animation ;-)
         DestroyImmediate(this.gameObject);
+        return true;
     }
 
     //called when a full line was removed below this block, so this one has to drop 1 line
-    public void MoveOneDown()
+    public bool UpdateDownDone()
     {
-        transform.position += new Vector3(0, -1, 0); ;
+        transform.position += new Vector3(0, -1, 0);
+        return true;
     }
 
     public void SetColor(Color c)

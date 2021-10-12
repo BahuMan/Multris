@@ -16,10 +16,11 @@ public class PlayingFieldController : MonoBehaviour {
     [SerializeField] private GameObject rightBorder;
     [SerializeField] private GameObject bottomBorder;
     [SerializeField] private GameObject grid;
+    [SerializeField] private UnityEngine.UI.Text statusText;
 
     [SerializeField] private GameObject[] Groups;
 
-    public enum Status_enum { IDLE, BLOCKS_FALLING, LINES_CHECK, LINES_DELETE, LINES_FILL }
+    public enum Status_enum { IDLE, BLOCKS_FALLING, LINES_CHECK, LINES_DELETE, LINES_FILL, BLOCK_CREATE }
     public Status_enum FieldStatus = Status_enum.IDLE;
 
     //private ActiveGroupController theActiveGroup;
@@ -34,9 +35,7 @@ public class PlayingFieldController : MonoBehaviour {
     private List<PlayerController> Players = new List<PlayerController>();
     public int PlayerCount { get => Players.Count; }
 
-    private List<ActiveGroupController> FallingBlocks = new List<ActiveGroupController>();
-    private List<int> LinesToCheck = new List<int>();
-    private List<BlockController> BlocksToDelete = new List<BlockController>();
+    private List<ActiveGroupController> FallingGroups = new List<ActiveGroupController>();
     private List<BlockController> BlocksToMoveDown = new List<BlockController>();
 
     void Start () {
@@ -45,25 +44,105 @@ public class PlayingFieldController : MonoBehaviour {
 
     private void Update()
     {
-        switch (FieldStatus) {
-            case Status_enum.IDLE: IdleCheckForPlayers(); break;
-            case Status_enum.BLOCKS_FALLING: FallingBlocksUpdate(); break;
-            case Status_enum.LINES_CHECK: DeleteLinesUpdate(); break;
+        switch (FieldStatus)
+        {
+            case Status_enum.IDLE:
+                this.statusText.text = "IDLE";
+                IdleCheckForPlayers();
+                break;
+            case Status_enum.BLOCK_CREATE:
+                this.statusText.text = "BLOCK_CREATE";
+                BlockCreateForPlayer();
+                break;
+            case Status_enum.BLOCKS_FALLING:
+                this.statusText.text = "BLOCKS_FALLING";
+                ActiveGroupFall();
+                break;
+            case Status_enum.LINES_CHECK:
+                this.statusText.text = "LINES_CHECK";
+                LinesCheck();
+                break;
+            case Status_enum.LINES_DELETE:
+                this.statusText.text = "LINES_DELETE";
+                LinesDelete();
+                break;
+            case Status_enum.LINES_FILL:
+                this.statusText.text = "LINES_FILL";
+                LinesFillEmpty();
+                break;
+            //case Status_enum.:
+            //    this.statusText.text = "FALLING";
+            //    ActiveGroupCreate();
+            //    break;
         }
     }
 
-    private void DeleteLinesUpdate()
+    private List<PlayerController> PlayersNeedBlocks = new List<PlayerController>();
+    private void BlockCreateForPlayer()
     {
-        throw new NotImplementedException();
+        while (PlayersNeedBlocks.Count > 0)
+        {
+            PlayerController p = PlayersNeedBlocks[0];
+            p.ActivateNextGroup(this.CreateNewNextGroup(p));
+            PlayersNeedBlocks.RemoveAt(0);
+        }
+        this.FieldStatus = Status_enum.BLOCKS_FALLING;
     }
 
-    private void FallingBlocksUpdate()
+    private List<BlockController> BlocksExploding = new List<BlockController>();
+    private void LinesDelete()
     {
-        foreach (var g in FallingBlocks.ToArray())
+        foreach (var blok in BlocksExploding.ToArray())
         {
-            //during the call of this update, the element might get fixed and be removed
-            //from the list. That's why the iterator runs over an array copy
-            g.FallingUpdate();
+            if (blok.UpdateDestructionDone()) BlocksExploding.Remove(blok);
+        }
+        if (BlocksExploding.Count == 0) this.FieldStatus = Status_enum.LINES_FILL;
+    }
+
+    private List<float> LinesToFill = new List<float>();
+    private List<BlockController> BlocksFalling = new List<BlockController>();
+    private void LinesFillEmpty()
+    {
+        while (LinesToFill.Count > 0)
+        {
+            float LineY = LinesToFill[0];
+            foreach (Transform b in transform)
+            {
+                if (b.position.y > LineY)
+                {
+                    BlockController block = b.gameObject.GetComponent<BlockController>();
+                    if (block != null && !BlocksFalling.Contains(block)) BlocksFalling.Add(block);
+                }
+            }
+            LinesToFill.RemoveAt(0);
+        }
+
+        foreach (var blok in BlocksFalling.ToArray())
+        {
+            if (blok.UpdateDownDone()) BlocksFalling.Remove(blok);
+        }
+
+        if (BlocksFalling.Count == 0) this.FieldStatus = Status_enum.BLOCK_CREATE;
+    }
+
+    private List<ActiveGroupController> FixedGroups = new List<ActiveGroupController>();
+    private void LinesCheck()
+    {
+        //assume we immediately skip to creating new block for player. If any lines were filled,
+        //this status will be overridden to Status_enum.LINES_DELETE
+
+        while (FixedGroups.Count > 0)
+        {
+            ActiveGroupController fixedGroup = FixedGroups[0];
+
+            PlayerController p = Players[fixedGroup.PlayerNr];
+            this.FieldStatus = Status_enum.BLOCK_CREATE;
+            this.PlayersNeedBlocks.Add(p);
+
+            CheckForCompleteLines(fixedGroup);
+            Reparent(fixedGroup);
+
+            FixedGroups.RemoveAt(0);
         }
     }
 
@@ -80,6 +159,22 @@ public class PlayingFieldController : MonoBehaviour {
         }
     }
 
+    private void ActiveGroupFall()
+    {
+        foreach (var g in FallingGroups.ToArray())
+        {
+            //during the call of this update, the element might get fixed and be removed
+            //from the list. That's why the iterator runs over an array copy
+            g.FallingUpdate();
+        }
+    }
+
+    private List<PlayerController> PlayersToActivateNewGroup = new List<PlayerController>();
+    private void ActiveGroupCreate()
+    {
+    }
+
+
     public int RegisterNewPlayer(PlayerController p)
     {
         int playernr = Players.Count;
@@ -91,7 +186,7 @@ public class PlayingFieldController : MonoBehaviour {
 
     public void RegisterFallingBlock(ActiveGroupController agc)
     {
-        this.FallingBlocks.Add(agc);
+        this.FallingGroups.Add(agc);
     }
 
     /**
@@ -133,29 +228,34 @@ public class PlayingFieldController : MonoBehaviour {
 
     //called by the group after it hit an obstruction and was fixed
     //(time to create a new group at the top)
-    public void GroupWasFixed(int playerNr, List<GameObject> blocks)
+    public void GroupWasFixed(ActiveGroupController fixedGroup)
     {
-        PlayerController p = Players[playerNr];
-        Reparent(blocks);
-        CheckForCompleteLines(blocks);
-        p.ActivateNextGroup(this.CreateNewNextGroup(p));
+
+        Debug.Log("GroupWasFixed for player " + fixedGroup.PlayerNr);
+        //this group should no longer receive fallingUpdates:
+        this.FallingGroups.Remove(fixedGroup);
+
+        this.FieldStatus = Status_enum.LINES_CHECK;
+        this.FixedGroups.Add(fixedGroup);
     }
 
-    private void Reparent(List<GameObject> blocks)
+    private void Reparent(ActiveGroupController fixedGroup)
     {
-        foreach (GameObject blk in blocks)
+        BlockController[] children = fixedGroup.GetComponentsInChildren<BlockController>();
+        foreach (BlockController blk in children)
         {
             blk.transform.parent = transform;
         }
     }
 
     //I only need to check for complete lines on lines where blocks were added recently
-    public void CheckForCompleteLines(List<GameObject> blocks)
+    public void CheckForCompleteLines(ActiveGroupController fixedGroup)
     {
-        Debug.Log("CheckForCompleteLines");
+
+        BlockController[] blocks = fixedGroup.GetComponentsInChildren<BlockController>();
         float minY = 0;
         float maxY = 0;
-        foreach (GameObject block in blocks)
+        foreach (BlockController block in blocks)
         {
             if (minY == 0 || block.transform.position.y < minY)
             {
@@ -166,15 +266,21 @@ public class PlayingFieldController : MonoBehaviour {
                 maxY = block.transform.position.y;
             }
         }
+        Debug.Log("For " + blocks.Length + " blocks, CheckForCompleteLines from " + minY + " to " + maxY);
         float currentY = minY;
-        while (currentY < maxY+1f)
+        while (currentY < (maxY+.1f))
         {
-            CheckForSingleCompleteLine(ref currentY);
+            if (CheckForSingleCompleteLine(currentY))
+            {
+                this.LinesToFill.Add(currentY);
+                this.FieldStatus = Status_enum.LINES_DELETE;
+            }
+            currentY++;
         }
     }
 
-    //returns true if a complete line was found. This means the same Y coordinate should be checked again
-    public void CheckForSingleCompleteLine(ref float LineY)
+    //returns true if a complete line was found. 
+    public bool CheckForSingleCompleteLine(float LineY)
     {
         Vector3 origin = new Vector3(this.leftBorder.transform.position.x, LineY, 0);
         Vector3 direction = new Vector3(1f, 0, 0);
@@ -183,28 +289,13 @@ public class PlayingFieldController : MonoBehaviour {
         Debug.Log("for Y = " + LineY + ", found " + allHits.Length + " hits");
         if (allHits.Length == blocksRequiredPerLine)
         {
-            foreach (RaycastHit hit in allHits)
+            foreach (var hit in allHits)
             {
-                hit.collider.gameObject.GetComponent<BlockController>().removeLine();
+                this.BlocksExploding.Add(hit.collider.GetComponent<BlockController>());
             }
-            BringOtherBlocksDown(LineY);
+            return true;
         }
-        else
-        {
-            LineY++; //since this parameter is passed by reference, the top function will now check the lines higher-up
-        }
-    }
-
-    private void BringOtherBlocksDown(float LineY)
-    {
-        foreach (Transform b in transform)
-        {
-            if (b.transform.position.y > LineY)
-            {
-                BlockController block = b.gameObject.GetComponent<BlockController>();
-                block?.MoveOneDown();
-            }
-        }
+        return false;
     }
 
     public ActiveGroupController CreateNewNextGroup(PlayerController p)
