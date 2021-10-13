@@ -37,9 +37,11 @@ public class BlockController : MonoBehaviour {
     }
 
     //called when a full line was removed below this block, so this one has to drop 1 line
-    public bool UpdateDownDone()
+    //first call will specify amout of lines to drop (as a float) and will be negative.
+    //subsequent calls will be 0, UNLESS additional lines have been deleted.
+    public bool UpdateDownDone(float AmountToDrop)
     {
-        transform.position += new Vector3(0, -1, 0);
+        transform.position += new Vector3(0, AmountToDrop, 0);
         return true;
     }
 

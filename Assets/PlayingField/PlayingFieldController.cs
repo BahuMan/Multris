@@ -103,6 +103,7 @@ public class PlayingFieldController : MonoBehaviour {
     private List<BlockController> BlocksFalling = new List<BlockController>();
     private void LinesFillEmpty()
     {
+
         while (LinesToFill.Count > 0)
         {
             float LineY = LinesToFill[0];
@@ -111,7 +112,11 @@ public class PlayingFieldController : MonoBehaviour {
                 if (b.position.y > LineY)
                 {
                     BlockController block = b.gameObject.GetComponent<BlockController>();
-                    if (block != null && !BlocksFalling.Contains(block)) BlocksFalling.Add(block);
+                    if (block != null)
+                    {
+                        block.UpdateDownDone(-1f);
+                        BlocksFalling.Add(block);
+                    }
                 }
             }
             LinesToFill.RemoveAt(0);
@@ -119,7 +124,7 @@ public class PlayingFieldController : MonoBehaviour {
 
         foreach (var blok in BlocksFalling.ToArray())
         {
-            if (blok.UpdateDownDone()) BlocksFalling.Remove(blok);
+            if (blok.UpdateDownDone(0f)) BlocksFalling.Remove(blok);
         }
 
         if (BlocksFalling.Count == 0) this.FieldStatus = Status_enum.BLOCK_CREATE;
@@ -267,15 +272,15 @@ public class PlayingFieldController : MonoBehaviour {
             }
         }
         Debug.Log("For " + blocks.Length + " blocks, CheckForCompleteLines from " + minY + " to " + maxY);
-        float currentY = minY;
-        while (currentY < (maxY+.1f))
+        float currentY = maxY;
+        while (currentY > (minY-.1f))
         {
             if (CheckForSingleCompleteLine(currentY))
             {
                 this.LinesToFill.Add(currentY);
                 this.FieldStatus = Status_enum.LINES_DELETE;
             }
-            currentY++;
+            currentY--;
         }
     }
 
