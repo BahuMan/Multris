@@ -8,8 +8,7 @@ A Unity project for a game with tetris-like controls
 * local joystick controls: left joystick or digipad to move blocks, shoulder buttons to rotate, "A" to drop
 
 ## Known Bugs
-- sometimes, a full line does not disappear
-- when multiple lines disappear, the above blocks only drop 1 line
+- sometimes, a full line does not disappear (the system doesn't realize how many lines need to be checked)
 
 ## To Do
 - more animation when disappearing lines
