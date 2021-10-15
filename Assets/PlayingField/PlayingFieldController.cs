@@ -259,15 +259,15 @@ public class PlayingFieldController : MonoBehaviour {
     {
 
         BlockController[] blocks = fixedGroup.GetComponentsInChildren<BlockController>();
-        float minY = 0;
-        float maxY = 0;
+        float minY = float.NaN;
+        float maxY = float.NaN;
         foreach (BlockController block in blocks)
         {
-            if (minY == 0 || block.transform.position.y < minY)
+            if (float.IsNaN(minY) || block.transform.position.y < minY)
             {
                 minY = block.transform.position.y;
             }
-            if (maxY == 0 || block.transform.position.y > maxY)
+            if (float.IsNaN(maxY) || block.transform.position.y > maxY)
             {
                 maxY = block.transform.position.y;
             }
