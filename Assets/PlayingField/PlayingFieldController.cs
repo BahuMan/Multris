@@ -148,6 +148,7 @@ public class PlayingFieldController : MonoBehaviour {
             Reparent(fixedGroup);
 
             FixedGroups.RemoveAt(0);
+            Destroy(fixedGroup.gameObject);
         }
     }
 

@@ -58,6 +58,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b398a740ca6c8f24496de5449cc15e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FadeDuration: 1
+  _color: {r: 0, g: 0, b: 0, a: 0}
+  ParticleExplosion: {fileID: 8926832539812635705, guid: c1934f0f95c1cab46900d3c6fd89bc8d,
+    type: 3}
 --- !u!1 &1000010462326568
 GameObject:
   m_ObjectHideFlags: 0
@@ -116,6 +120,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b398a740ca6c8f24496de5449cc15e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FadeDuration: 1
+  _color: {r: 0, g: 0, b: 0, a: 0}
+  ParticleExplosion: {fileID: 8926832539812635705, guid: c1934f0f95c1cab46900d3c6fd89bc8d,
+    type: 3}
 --- !u!1 &1000012159267246
 GameObject:
   m_ObjectHideFlags: 0
@@ -328,6 +336,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b398a740ca6c8f24496de5449cc15e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FadeDuration: 1
+  _color: {r: 0, g: 0, b: 0, a: 0}
+  ParticleExplosion: {fileID: 8926832539812635705, guid: c1934f0f95c1cab46900d3c6fd89bc8d,
+    type: 3}
 --- !u!1 &1000013813372410
 GameObject:
   m_ObjectHideFlags: 0
@@ -530,6 +542,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b398a740ca6c8f24496de5449cc15e71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FadeDuration: 1
+  _color: {r: 0, g: 0, b: 0, a: 0}
+  ParticleExplosion: {fileID: 8926832539812635705, guid: c1934f0f95c1cab46900d3c6fd89bc8d,
+    type: 3}
 --- !u!1 &1000014261310358
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,6 +6,7 @@ public class BlockController : MonoBehaviour {
 
     public float FadeDuration = 1f;
     public Color _color;
+    [SerializeField] ParticleSystem ParticleExplosion;
 
     //called when the group stops falling and every cube is fixed in the playing field
     public void wasFixed()
@@ -27,13 +28,31 @@ public class BlockController : MonoBehaviour {
         SetColor(c);
     }
 
+    float DestructionTime = 0f;
     //when a block gets destroyed, this function gets called every frame
     //until it returns true (signalling destruction is complete)
     public bool UpdateDestructionDone()
     {
-        //TODO: spectacular self destruction animation ;-)
-        DestroyImmediate(this.gameObject);
-        return true;
+        if (DestructionTime == 0f)
+        {
+            Destroy(this.GetComponent<BoxCollider>());
+            Destroy(this.GetComponentInChildren<MeshRenderer>());
+            DestructionTime = Time.time + Random.Range(0.1f, .3f);
+            return false;
+        }
+        else if (Time.time > DestructionTime)
+        {
+            if (this.ParticleExplosion != null)
+            {
+                Instantiate<ParticleSystem>(this.ParticleExplosion).transform.position = this.transform.position;
+            }
+            Destroy(this.gameObject);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     //called when a full line was removed below this block, so this one has to drop 1 line
