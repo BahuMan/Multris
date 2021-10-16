@@ -114,7 +114,7 @@ public class PlayingFieldController : MonoBehaviour {
                     BlockController block = b.gameObject.GetComponent<BlockController>();
                     if (block != null)
                     {
-                        block.UpdateDownDone(-1f);
+                        block.UpdateDownDone(1f);
                         BlocksFalling.Add(block);
                     }
                 }
