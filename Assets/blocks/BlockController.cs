@@ -8,6 +8,9 @@ public class BlockController : MonoBehaviour {
     public Color _color;
     [SerializeField] ParticleSystem ParticleExplosion;
 
+    public delegate bool isBlockDestructionDoneUpdate();
+    public event isBlockDestructionDoneUpdate IsBlockDestructionDone;
+
     //called when the group stops falling and every cube is fixed in the playing field
     public void wasFixed()
     {
@@ -42,6 +45,13 @@ public class BlockController : MonoBehaviour {
         }
         else if (Time.time > DestructionTime)
         {
+
+            if (IsBlockDestructionDone != null && !IsBlockDestructionDone())
+            {
+                //someone else is doing stuff that prevents this block from self-destruction. Hold on.
+                return false;
+            }
+
             if (this.ParticleExplosion != null)
             {
                 Instantiate<ParticleSystem>(this.ParticleExplosion).transform.position = this.transform.position;

@@ -1080,6 +1080,8 @@ MonoBehaviour:
   - {fileID: 1000013973967706, guid: e26ea111ec59f074d80065cca15fee1f, type: 3}
   - {fileID: 1000013482740940, guid: 53c2ed60c39410b4db30c60bae3427e5, type: 3}
   - {fileID: 1000011285436560, guid: 4d33ea0aa657df04e9cda4faa59debcf, type: 3}
+  SpecialBlocks:
+  - {fileID: 4282152985205560772, guid: d7194cc07b1e0ea458325e9d4468a700, type: 3}
   FieldStatus: 0
   IdleText: {fileID: 697732997}
 --- !u!1 &1838426308

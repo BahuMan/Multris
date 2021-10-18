@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 
 public class PlayingFieldController : MonoBehaviour {
-
+    private const float ChanceForSpecialBlock = .3f;
     public Transform GroupStartPosition;
     public Transform WaitingArea;
 
@@ -19,6 +19,7 @@ public class PlayingFieldController : MonoBehaviour {
     [SerializeField] private UnityEngine.UI.Text statusText;
 
     [SerializeField] private GameObject[] Groups;
+    [SerializeField] private GameObject[] SpecialBlocks;
 
     public enum Status_enum { IDLE, BLOCKS_FALLING, LINES_CHECK, LINES_DELETE, LINES_FILL, BLOCK_CREATE }
     public Status_enum FieldStatus = Status_enum.IDLE;
@@ -309,7 +310,29 @@ public class PlayingFieldController : MonoBehaviour {
         int newIndex = UnityEngine.Random.Range(0, Groups.Length);
         GameObject newGroup = (GameObject)Instantiate(Groups[newIndex], p.NextGroupPosition.position, p.NextGroupPosition.rotation);
         ActiveGroupController agc = newGroup.GetComponent<ActiveGroupController>();
+        agc = SubstituteSpecialBlock(agc);
         agc.SetPlayer(p.playerNr, p.MyColor);
+        return agc;
+    }
+
+    private ActiveGroupController SubstituteSpecialBlock(ActiveGroupController agc)
+    {
+        if (UnityEngine.Random.value < ChanceForSpecialBlock)
+        {
+            Debug.Log("Creating special block");
+            int toReplace = UnityEngine.Random.Range(0, agc.transform.childCount);
+            GameObject cubeToRemove = agc.transform.GetChild(toReplace).gameObject;
+            int chosenSpecial = UnityEngine.Random.Range(0, this.SpecialBlocks.Length);
+            GameObject cubeToAdd = Instantiate(this.SpecialBlocks[chosenSpecial]);
+
+            cubeToAdd.transform.parent = agc.transform;
+            cubeToAdd.transform.localPosition = cubeToRemove.transform.localPosition;
+            cubeToAdd.transform.localRotation = cubeToRemove.transform.localRotation;
+            cubeToAdd.transform.localScale = cubeToRemove.transform.localScale;
+
+            DestroyImmediate(cubeToRemove);
+        }
+
         return agc;
     }
 
