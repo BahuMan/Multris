@@ -17,3 +17,6 @@ A Unity project for a game with tetris-like controls
 - menus, named players
 - what should happen when a player quits/dies ?
 - special blocks
+  - option 1: special blocks are already visible as the new group drops (giving you choice where to place the special block)
+  - option 2: special blocks only become visible once the group has been fixed
+  - option 3: special blocks activate immediately as the group is fixed
